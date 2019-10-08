@@ -161,4 +161,83 @@
     set pid = #{pid,jdbcType=INTEGER}
     where poid = #{poid,jdbcType=INTEGER}
   </update>
+  
+  <!-- 
+  	根据业务自己加的
+   -->
+   <!-- 返回订单表的id和明细表的订单时间 -->
+   <!-- mybatis使用sql查询的结果，只要你设定的resultMap或其他，属性-字段的类型只要对应，一定到这个实体对象上，额 -->
+  <select id="findpoAndpd" resultMap="poAndpd1">
+  	select distinct purchasedetails.time,purchaseorder.poid from purchaseorder
+	JOIN purchasedetails ON purchasedetails.poid=purchaseorder.poid
+	ORDER BY purchasedetails.time
+  </select>
+  <resultMap type="Purchaseorder" id="poAndpd1">
+  	 <id column="poid" jdbcType="INTEGER" property="poid" />
+     <result column="time" jdbcType="DATE" property="time" />
+  </resultMap>
+  
+  <update id="close">
+  	SET FOREIGN_KEY_CHECKS=0
+  </update>
+   <update id="open">
+  	SET FOREIGN_KEY_CHECKS=1
+  </update>
+  <delete id="delByPoid" parameterType="Integer">
+  	delete purchasedetails,purchaseorder from purchasedetails
+	inner join purchaseorder on purchasedetails.poid=purchaseorder.poid
+	where purchaseorder.poid=#{poid}
+  </delete>
+  
+  <insert id="saveTopo" parameterType="Purchaseorder">
+  	insert into purchaseorder values(null,null)
+  </insert>
+  <insert id="saveTopd" parameterType="Purchasedetails">
+  	insert into purchasedetails values(null,#{poid},#{mid},#{pnumber},null,#{qualityguaranteperiod},#{sid},null)
+  </insert>
+  <select id="findMaxpoid" resultType="Integer">
+  	SELECT MAX(poid) from purchaseorder
+  </select>
+  <update id="saveDate" parameterType="Purchasedetails">
+  	update purchasedetails set time=#{time} where poid=#{poid}
+  </update>
+  
+  
+  <!-- 分页 -->
+  <!-- 查询订单表记录数 -->
+  <select id="getRowCount" resultType="Integer">
+  	SELECT COUNT(*) FROM purchaseorder
+  </select>
+  <!-- 查询两表分页数据 -->
+  <select id="findSomeByPage" resultType="Purchasedetails">
+  	select distinct purchasedetails.time,purchaseorder.poid from purchasedetails
+	JOIN purchaseorder ON purchasedetails.poid=purchaseorder.poid 
+	LIMIT ${starLine},${fsize}
+  </select>
+  
+  <!-- 根据搜索查询两表分页数据 -->
+  <!-- 总行数 -->
+  <select id="getRowCountBySeachTime" resultType="Integer">
+  	select COUNT(DISTINCT purchasedetails.time,purchaseorder.poid) from purchasedetails
+	JOIN purchaseorder ON purchasedetails.poid=purchaseorder.poid 
+	where purchasedetails.time like '${ftime}%'
+  </select>
+  <select id="getRowCountBySeachId" resultType="Integer">
+  	select COUNT(DISTINCT purchasedetails.time,purchaseorder.poid) from purchasedetails
+	JOIN purchaseorder ON purchasedetails.poid=purchaseorder.poid
+	where purchaseorder.poid like '%${fpoid}%'
+  </select>
+  
+  <select id="findSomeBySeachTime" resultType="Purchasedetails">
+  	select distinct purchasedetails.time,purchaseorder.poid from purchasedetails
+	JOIN purchaseorder ON purchasedetails.poid=purchaseorder.poid 
+	where DATE_FORMAT(purchasedetails.time,'%Y-%m-%d') like '${ftime}%' 
+	limit ${starLine},${fsize}
+  </select>
+  <select id="findSomeBySeachId" resultType="Purchasedetails">
+  	select distinct purchasedetails.time,purchaseorder.poid from purchasedetails
+	JOIN purchaseorder ON purchasedetails.poid=purchaseorder.poid 
+	where purchaseorder.poid like '%${fpoid}%' 
+	limit ${starLine},${fsize}
+  </select>
 </mapper>

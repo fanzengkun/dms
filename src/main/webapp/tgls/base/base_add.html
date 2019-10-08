@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1">
+		<!-- Google Chrome Frame也可以让IE用上Chrome的引擎: -->
+		<meta name="renderer" content="webkit">
+		<!--国产浏览器高速模式-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="穷在闹市" />
+		<!-- 作者 -->
+		<meta name="revised" content="穷在闹市.v3, 2019/05/01" />
+		<!-- 定义页面的最新版本 -->
+		<meta name="description" content="网站简介" />
+		<!-- 网站简介 -->
+		<meta name="keywords" content="搜索关键字，以半角英文逗号隔开" />
+		<title>穷在闹市出品</title>
+
+		<!-- 公共样式 开始 -->
+		<link rel="stylesheet" type="text/css" href="../../css/base.css">
+		<link rel="stylesheet" type="text/css" href="../../css/iconfont.css">
+		<script type="text/javascript" src="../../framework/jquery-1.11.3.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../layui/css/layui.css">
+		<script type="text/javascript" src="../../layui/layui.js"></script>
+		<!-- 滚动条插件 -->
+		<link rel="stylesheet" type="text/css" href="../../css/jquery.mCustomScrollbar.css">
+		<script src="../../framework/jquery-ui-1.10.4.min.js"></script>
+		<script src="../../framework/jquery.mousewheel.min.js"></script>
+		<script src="../../framework/jquery.mCustomScrollbar.min.js"></script>
+		<script src="../../framework/cframe.js"></script><!-- 仅供所有子页面使用 -->
+		<!-- 公共样式 结束 -->
+		
+		<!-- vue.js Ajax(resource)-->
+		<script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>             
+		<script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script> 
+		
+		<style>
+			.layui-form{
+				margin-right: 30%;
+			}
+			.layui-form-label{
+				width: 100px;
+			}
+			.layui-input-block{
+				margin-left: 130px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<br /><br />
+		&#12288;&#12288;&#12288;&#12288;&#12288;
+		<span style="font-size: 23px;">订单明细填写</span><br /><br />
+		
+		<div class="cBody">
+		
+			<form id="addForm" class="layui-form" >		
+				<div class="layui-form-item">
+					<label class="layui-form-label">第</label>
+					<div class="layui-input-inline shortInput">
+						<input class="layui-input" type="text" v-model="fcount" readonly="readonly"/>
+					</div>
+					<label >条明细</label>
+				</div>
+			</form>
+			
+			<form id="addForm" class="layui-form" >				
+				<div class="layui-form-item">
+					<label class="layui-form-label">药品编号</label>
+					<div class="layui-input-inline shortInput">
+						<input type="text" name="realName" required="" lay-verify="" placeholder="" autocomplete="off" class="layui-input" v-model="mid">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">药品数量</label>
+					<div class="layui-input-inline shortInput">
+						<input type="text" name="realName" required="" lay-verify="" placeholder="" autocomplete="off" class="layui-input" v-model="pnumber">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">到期时间</label>
+					<div class="layui-input-inline shortInput">
+						<input type="date" name="realName" required="" lay-verify="" placeholder="" autocomplete="off" class="layui-input" v-model="qualityGuarantePeriod">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">供应商编号</label>
+					<div class="layui-input-inline shortInput">
+						<input type="text" name="realName" required="" lay-verify="" placeholder="" autocomplete="off" class="layui-input" v-model="sid">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">											
+						<button class="layui-btn" lay-submit="" lay-filter="submitBut" @click="returnKV" >添加明细</button>
+						<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				</div>
+			</form>
+			
+			
+			<form id="addForm" class="layui-form">
+				<div class="layui-input-item">
+					<label class="layui-form-label">订单时间</label>
+					<div class="layui-inline">
+						<input type="date" name="time" required="" lay-verify="" class="layui-input" v-model="time">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-filter="submitBut" @click="returnKV2">立即提交</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<script>
+			var vue=new Vue({
+				el:".cBody",
+				data:{
+					fcount:"",
+					mid:"",
+					pnumber:"",
+					qualityGuarantePeriod:"",
+					sid:"",
+					time:"",
+					map:[]
+				},
+				created(){
+					this.showCount();
+				},
+				methods: {
+					showCount() {
+						this.$http.post("http://localhost:8888/purchaseOrdes").then(function(result) {
+							this.map=result.body;
+							this.fcount=this.map[0].count;
+							this.fcount=this.fcount+1;
+						});
+					},
+					returnKV() {
+						var jsonKV={"mid":this.mid, "pnumber":this.pnumber, "qualityGuarantePeriod":this.qualityGuarantePeriod, "sid":this.sid, "_method":"put"};
+						this.$http.post("http://localhost:8888/purchaseOrdes",jsonKV, {emulateJSON:true}).then(function() {
+							
+						});
+					},
+					returnKV2() {
+						var jsonKV={"time":this.time, "_method":"put"};
+						this.$http.post("http://localhost:8888/purchaseOrdes",jsonKV, {emulateJSON:true}).then(function() {
+							alert("添加订单成功");
+						});
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

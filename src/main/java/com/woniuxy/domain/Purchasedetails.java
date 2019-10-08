@@ -19,7 +19,7 @@ public class Purchasedetails {
 
     private Integer aid;
 
-    public Integer getPid() {
+	public Integer getPid() {
         return pid;
     }
 
@@ -82,4 +82,10 @@ public class Purchasedetails {
     public void setAid(Integer aid) {
         this.aid = aid;
     }
+
+	@Override
+	public String toString() {
+		return "Purchasedetails [pid=" + pid + ", poid=" + poid + ", mid=" + mid + ", pnumber=" + pnumber + ", time="
+				+ time + ", qualityguaranteperiod=" + qualityguaranteperiod + ", sid=" + sid + ", aid=" + aid + "]";
+	}
 }

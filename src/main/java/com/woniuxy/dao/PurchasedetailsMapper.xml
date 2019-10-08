@@ -255,4 +255,95 @@
       aid = #{aid,jdbcType=INTEGER}
     where pid = #{pid,jdbcType=INTEGER}
   </update>
+  
+  
+  
+  
+  <!-- 普通分页 -->
+  <!-- 总行数 -->
+  <select id="getRowCount" resultType="Integer">
+  	SELECT COUNT(*) FROM purchasedetails
+  </select>
+  <!-- 分页数据 -->
+  <select id="findSomeByPage" resultType="Purchasedetails">
+  	select * from purchasedetails LIMIT ${startLine},${fsize}
+  </select>
+  
+  <!-- 有条件分页 -->
+  <!-- 条件数据记录数 -->
+  <select id="getRowCountBySome" parameterType="com.woniuxy.domain.Purchasedetails" resultType="Integer">
+  	SELECT COUNT(*) FROM purchasedetails 
+  		<where>
+  			<if test="pid!=null">
+  				and pid like '%${pid}%'
+  			</if>
+  			<if test="poid!=null">
+  				and poid like '%${poid}%'
+  			</if>
+  			<if test="mid!=null">
+  				and mid like '%${mid}%'
+  			</if>
+  			<if test="pnumber!=null">
+  				and pnumber like '%${pnumber}%'
+  			</if>
+  			<if test="sid!=null">
+  				and sid like '%${sid}%'
+  			</if>
+  		</where>
+  </select>
+  <!-- 条件数据 -->
+  <select id="findSomeBySome" parameterType="map" resultType="Purchasedetails">
+  	SELECT * FROM purchasedetails 
+  		<where>
+  			<if test="pd.pid!=null">
+  				and pid like '%${pd.pid}%'
+  			</if>
+  			<if test="pd.poid!=null">
+  				and poid like '%${pd.poid}%'
+  			</if>
+  			<if test="pd.mid!=null">
+  				and mid like '%${pd.mid}%'
+  			</if>
+  			<if test="pd.pnumber!=null">
+  				and pnumber like '%${pd.pnumber}%'
+  			</if>
+  			<if test="pd.time!=null">
+  				and time  DATE_FORMAT(purchasedetails.time,'%Y-%m-%d')
+  			 	like '%${pd.time}%'
+  			</if>
+  			<if test="pd.qualityguaranteperiod!=null">
+  				and qualityguaranteperiod   DATE_FORMAT(purchasedetails.qualityguaranteperiod,'%Y-%m-%d') 
+  				like '%${pd.qualityguaranteperiod}%'
+  			</if>
+  			<if test="pd.sid!=null">
+  				and sid like '%${pd.sid}%'
+  			</if>
+  		</where>
+  		limit ${startLine},${fsize}
+  </select>
+  
+  <select id="getRowCountByTime" resultType="Integer">
+  	select count(*) from purchasedetails where DATE_FORMAT(purchasedetails.time,'%Y-%m-%d')
+  	like '%${time}%' 
+  </select>
+  <select id="getRowCountByQualityguaranteperiod" resultType="Integer">
+  	select count(*) from purchasedetails where DATE_FORMAT(purchasedetails.qualityguaranteperiod,'%Y-%m-%d') 
+  	like '%${qualityguaranteperiod}%' 
+  </select>
+  
+  <select id="findSomeByTime" resultType="Purchasedetails">
+  	select * from purchasedetails where DATE_FORMAT(purchasedetails.time,'%Y-%m-%d') 
+  	like '%${time}%' limit ${startLine},${fsize}
+  </select>
+  <select id="findSomeByQualityguaranteperiod" resultType="Purchasedetails">
+  	select * from purchasedetails where DATE_FORMAT(purchasedetails.qualityguaranteperiod,'%Y-%m-%d') 
+  	like '%${qualityguaranteperiod}%' limit ${startLine},${fsize}
+  </select>
+  
+  <select id="findpdondo" resultType="Integer">
+  	select count(purchasedetails.pid) from purchasedetails WHERE poid=#{poid}
+  </select>
+  <delete id="delpo">
+  	delete from purchaseorder where poid=#{poid}
+  </delete>
 </mapper>
